@@ -1,148 +1,362 @@
-const gift = document.getElementById("gift");
-const bgMusic = document.getElementById("bgMusic");
-const musicToggle = document.getElementById("musicToggle");
+// ========================================
+// 1. LOVE MESSAGES
+// ========================================
 
-const openButton = document.getElementById("openGift");
-const welcome = document.getElementById("welcome");
-const surprise = document.getElementById("surprise");
-const replay = document.getElementById("replay");
+const messages = [
+    "I see a future with you.",
+    "I think about you every time.",
+    "I love you, my love.",
+    "I have a future with you.",
+    "My love, you are my everything.",
+    "I love you more than you think.",
+    "I think about you every time."
+];
 
-const starsContainer = document.getElementById("stars");
-const heartsContainer = document.getElementById("hearts");
+const message = document.getElementById("loveMessage");
 
-// CREATE BACKGROUND STARS
-function createStars() {
-    for (let i = 0; i < 100; i++) {
-        const star = document.createElement("div");
+let messageIndex = 0;
+let direction = 1;
 
-        star.className = "star";
-        star.style.left = Math.random() * 100 + "%";
-        star.style.top = Math.random() * 100 + "%";
 
-        const size = Math.random() * 3 + 1;
+// ========================================
+// 2. HEART CANVAS
+// ========================================
 
-        star.style.width = size + "px";
-        star.style.height = size + "px";
+const canvas = document.getElementById("heartCanvas");
+const ctx = canvas.getContext("2d");
 
-        star.style.animationDelay = Math.random() * 3 + "s";
+let W, H, particles = [];
+let time = 0;
+let lastTime = 0;
 
-        starsContainer.appendChild(star);
+function resizeCanvas() {
+
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    W = window.innerWidth;
+    H = window.innerHeight;
+
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    createHeart();
+}
+
+
+// ========================================
+// 3. HEART MATHEMATICAL FORMULA
+// ========================================
+
+function heartShape(t) {
+
+    const x = 16 * Math.pow(Math.sin(t), 3);
+
+    const y =
+        13 * Math.cos(t)
+        - 5 * Math.cos(2 * t)
+        - 2 * Math.cos(3 * t)
+        - Math.cos(4 * t);
+
+    return { x, y };
+}
+
+
+// ========================================
+// 4. CREATE GLOWING PARTICLES
+// ========================================
+
+function createHeart() {
+
+    particles = [];
+
+    const count = W < 600 ? 420 : 750;
+
+    const scale = Math.min(W / 43, H / 39);
+
+    const centerX = W / 2;
+    const centerY = H / 2;
+
+    for (let i = 0; i < count; i++) {
+
+        const t = Math.random() * Math.PI * 2;
+
+        const heart = heartShape(t);
+
+        // Fill the heart instead of creating only an outline.
+
+        const fill = Math.sqrt(Math.random());
+
+        const x =
+            centerX + heart.x * fill * scale;
+
+        const y =
+            centerY - heart.y * fill * scale;
+
+        particles.push({
+
+            x: Math.random() * W,
+            y: Math.random() * H,
+
+            targetX: x,
+            targetY: y,
+
+            size: Math.random() * 1.8 + .6,
+
+            alpha: Math.random() * .6 + .35,
+
+            speed: Math.random() * 2 + .5,
+
+            phase: Math.random() * Math.PI * 2,
+
+            drift: Math.random() * 15 + 5,
+
+            color: Math.random() > .5
+                ? "190, 210, 255"
+                : "180, 125, 255"
+
+        });
     }
 }
 
-// FLOATING HEARTS
-function createHearts() {
-    const emojis = ["💜", "💖", "✨", "💕", "🤍", "🌸"];
 
-    const heart = document.createElement("span");
+// ========================================
+// 5. ANIMATE THE HEART
+// ========================================
 
-    heart.className = "heart";
+function animate(timestamp) {
 
-    heart.textContent =
-        emojis[Math.floor(Math.random() * emojis.length)];
+    requestAnimationFrame(animate);
 
-    heart.style.left = Math.random() * 100 + "%";
-    heart.style.fontSize = Math.random() * 20 + 15 + "px";
+    const dt = Math.min(
+        (timestamp - (lastTime || timestamp)) / 1000,
+        .04
+    );
 
-    heartsContainer.appendChild(heart);
+    lastTime = timestamp;
 
-    setTimeout(() => heart.remove(), 6500);
+    time += dt;
+
+    ctx.clearRect(0, 0, W, H);
+
+    // Heart breathing effect.
+
+    const pulse = 1 + Math.sin(time * 2) * .025;
+
+    // Heart dissolving and reforming effect.
+
+    const dissolve = Math.pow(
+        Math.max(0, Math.sin(time * .8)),
+        5
+    );
+
+    particles.forEach(p => {
+
+        const wave = Math.sin(
+            time * p.speed + p.phase
+        );
+
+        const spread = dissolve * p.drift;
+
+        const targetX =
+            W / 2 +
+            (p.targetX - W / 2) * pulse;
+
+        const targetY =
+            H / 2 +
+            (p.targetY - H / 2) * pulse;
+
+        const movingX =
+            targetX +
+            Math.cos(p.phase + time) * spread;
+
+        const movingY =
+            targetY +
+            Math.sin(p.phase + time) * spread;
+
+        // Smooth movement.
+
+        p.x += (movingX - p.x) * Math.min(1, dt * 4);
+
+        p.y += (movingY - p.y) * Math.min(1, dt * 4);
+
+        // Glowing particles.
+
+        const opacity =
+            p.alpha *
+            (.65 + .35 * Math.sin(time * 2 + p.phase));
+
+        const size =
+            p.size * (1 + Math.max(0, wave) * .3);
+
+        ctx.beginPath();
+
+        ctx.fillStyle =
+            `rgba(${p.color}, ${opacity})`;
+
+        ctx.shadowBlur = 12;
+
+        ctx.shadowColor =
+            `rgba(${p.color}, .95)`;
+
+        ctx.arc(
+            p.x,
+            p.y,
+            size,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+
+    });
+
+    ctx.shadowBlur = 0;
 }
 
-// UPDATE MUSIC BUTTON
-function updateMusicButton() {
-    musicToggle.textContent = bgMusic.paused
-        ? "🎵 PLAY MUSIC"
-        : "🎵 PAUSE MUSIC";
-}
 
-// START MUSIC
-function startMusic() {
-    bgMusic.play()
-        .then(() => {
-            updateMusicButton();
-        })
-        .catch(error => {
-            console.log("Music playback failed:", error);
-            updateMusicButton();
-        });
-}
+// ========================================
+// 6. REVERSE MESSAGE CYCLE
+// ========================================
 
-// OPEN THE GIFT
-function openTheGift() {
+function changeMessage() {
 
-    openButton.disabled = true;
-    openButton.textContent = "OPENING YOUR SURPRISE...";
-
-    gift.classList.add("open");
-
-    // START THE BACKGROUND MUSIC
-    startMusic();
+    message.classList.add("fade");
 
     setTimeout(() => {
 
-        welcome.classList.add("hidden");
-        surprise.classList.remove("hidden");
+        messageIndex += direction;
 
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
+        if (messageIndex >= messages.length - 1) {
 
-        // CELEBRATION HEARTS
-        for (let i = 0; i < 30; i++) {
-            setTimeout(createHearts, i * 120);
+            messageIndex = messages.length - 1;
+
+            direction = -1;
+
+        } else if (messageIndex <= 0) {
+
+            messageIndex = 0;
+
+            direction = 1;
         }
 
-    }, 1300);
+        message.textContent = messages[messageIndex];
+
+        message.classList.remove("fade");
+
+    }, 700);
 }
 
-// PLAY OR PAUSE MUSIC
-function toggleMusic() {
 
-    if (bgMusic.paused) {
-        startMusic();
-    } else {
-        bgMusic.pause();
-        updateMusicButton();
+// Change message every 4 seconds.
+
+setInterval(changeMessage, 4000);
+
+
+// ========================================
+// 7. BACKGROUND MUSIC
+// ========================================
+
+const audio = document.getElementById("backgroundMusic");
+
+const musicButton = document.getElementById("musicButton");
+
+const musicIcon = document.getElementById("musicIcon");
+
+audio.loop = true;
+
+
+// Try automatic playback when the page opens.
+
+async function startMusic() {
+
+    try {
+
+        await audio.play();
+
+        musicIcon.textContent = "Ⅱ";
+
+        musicButton.setAttribute(
+            "aria-label",
+            "Pause music"
+        );
+
+    } catch (error) {
+
+        // Browser may block automatic audio.
+        // The visitor can start it with the button.
+
+        musicIcon.textContent = "▶";
+
+        musicButton.setAttribute(
+            "aria-label",
+            "Play music"
+        );
     }
 }
 
-// CLOSE GIFT AND RETURN TO WELCOME SCREEN
-function closeGift() {
 
-    // STOP MUSIC AND RESET TO BEGINNING
-    bgMusic.pause();
-    bgMusic.currentTime = 0;
+// Pause and play control.
 
-    updateMusicButton();
+musicButton.addEventListener("click", async () => {
 
-    // HIDE THE SURPRISE
-    surprise.classList.add("hidden");
-    welcome.classList.remove("hidden");
+    if (audio.paused) {
 
-    // RESET GIFT BOX
-    gift.classList.remove("open");
+        try {
 
-    // RESET OPEN BUTTON
-    openButton.disabled = false;
-    openButton.innerHTML = 'OPEN YOUR GIFT <span>✦</span>';
+            await audio.play();
 
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
+            musicIcon.textContent = "Ⅱ";
+
+            musicButton.setAttribute(
+                "aria-label",
+                "Pause music"
+            );
+
+        } catch (error) {
+
+            musicIcon.textContent = "▶";
+        }
+
+    } else {
+
+        audio.pause();
+
+        musicIcon.textContent = "▶";
+
+        musicButton.setAttribute(
+            "aria-label",
+            "Play music"
+        );
+    }
+
+});
+
+
+// Backup: restart music if the track ends.
+
+audio.addEventListener("ended", () => {
+
+    audio.currentTime = 0;
+
+    audio.play().catch(() => {
+
+        musicIcon.textContent = "▶";
+
     });
-}
 
-// BUTTON CONNECTIONS
-openButton.addEventListener("click", openTheGift);
+});
 
-musicToggle.addEventListener("click", toggleMusic);
 
-replay.addEventListener("click", closeGift);
+// ========================================
+// 8. START THE PROJECT
+// ========================================
 
-// START WEBSITE
-createStars();
+window.addEventListener("resize", resizeCanvas);
 
-// FLOATING HEARTS
-setInterval(createHearts, 1800);
+resizeCanvas();
+
+requestAnimationFrame(animate);
+
+startMusic();
