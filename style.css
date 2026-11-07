@@ -1,0 +1,425 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --purple: #a855f7;
+    --light-purple: #e9c5ff;
+    --gold: #ffd98b;
+    --background: #10091f;
+}
+
+body {
+    min-height: 100vh;
+    background:
+        radial-gradient(ellipse at top, #40205d 0%, transparent 55%),
+        linear-gradient(135deg, #10091f, #1d1035, #090613);
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    overflow-x: hidden;
+}
+
+.container {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 900px;
+    margin: auto;
+    padding: 55px 22px;
+    text-align: center;
+}
+
+.stars, .floating-hearts {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle 3s infinite ease-in-out;
+}
+
+@keyframes twinkle {
+    0%, 100% {
+        opacity: .15;
+        transform: scale(.7);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.5);
+    }
+}
+
+.eyebrow {
+    color: var(--gold);
+    font-size: 11px;
+    letter-spacing: 4px;
+    margin-bottom: 24px;
+}
+
+h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(38px, 7vw, 65px);
+    line-height: 1.2;
+    color: #fff;
+    text-shadow: 0 0 25px #bd77ff77;
+}
+
+h1 span, h2 span {
+    display: block;
+    color: var(--light-purple);
+    margin-top: 10px;
+}
+
+.intro {
+    color: #d4c2e4;
+    max-width: 500px;
+    margin: 22px auto;
+    line-height: 1.9;
+    font-size: 14px;
+}
+
+/* GIFT BOX */
+
+.gift-area {
+    display: flex;
+    justify-content: center;
+    padding: 65px 0 35px;
+}
+
+.gift {
+    width: 180px;
+    height: 180px;
+    position: relative;
+    animation: floatGift 3s infinite ease-in-out;
+    filter: drop-shadow(0 0 25px #b35cff55);
+}
+
+@keyframes floatGift {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+.gift-box {
+    position: absolute;
+    width: 170px;
+    height: 125px;
+    bottom: 0;
+    left: 5px;
+    background: linear-gradient(135deg, #9b43dc, #4d176f);
+    border: 1px solid #d8a5ff;
+    border-radius: 5px 5px 12px 12px;
+    box-shadow: inset 0 0 20px #ffffff22;
+}
+
+.box-ribbon {
+    position: absolute;
+    width: 28px;
+    height: 100%;
+    left: 71px;
+    background: linear-gradient(90deg, #f5d28a, #fff0c6, #d9a64f);
+}
+
+.box-front {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-size: 30px;
+    text-shadow: 0 0 15px white;
+}
+
+.gift-lid {
+    position: absolute;
+    width: 190px;
+    height: 35px;
+    top: 20px;
+    left: -5px;
+    z-index: 2;
+    background: linear-gradient(135deg, #c178f2, #7024a5);
+    border: 1px solid #f0c5ff;
+    border-radius: 6px;
+    transition: transform 1s ease;
+}
+
+.lid-ribbon {
+    width: 30px;
+    height: 100%;
+    margin: auto;
+    background: linear-gradient(90deg, #f5d28a, #fff0c6, #d9a64f);
+}
+
+.bow {
+    position: absolute;
+    top: -32px;
+    left: 72px;
+    font-size: 35px;
+}
+
+.gift.open .gift-lid {
+    transform: translate(65px, -100px) rotate(25deg);
+}
+
+.gift.open {
+    animation: giftReveal 1s ease forwards;
+}
+
+@keyframes giftReveal {
+    50% { transform: scale(1.15); }
+    100% { transform: scale(.8) translateY(20px); opacity: 0; }
+}
+
+.gift-caption {
+    color: #d8c3ec;
+    font-size: 13px;
+    margin-bottom: 25px;
+}
+
+/* BUTTONS */
+
+button {
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    border: none;
+}
+
+.open-button {
+    padding: 16px 35px;
+    border-radius: 50px;
+    background: linear-gradient(120deg, #b65ef1, #7730b9);
+    color: white;
+    font-size: 13px;
+    letter-spacing: 2px;
+    font-weight: 600;
+    box-shadow: 0 0 30px #a84ff577;
+    transition: .3s;
+}
+
+.open-button:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 45px #c77bff;
+}
+
+.open-button span {
+    color: var(--gold);
+    margin-left: 8px;
+}
+
+.signature {
+    color: #bba5ce;
+    font-size: 12px;
+    margin-top: 28px;
+}
+
+/* SURPRISE SCREEN */
+
+.hidden {
+    display: none !important;
+}
+
+.surprise-screen {
+    animation: revealScreen 1.5s ease both;
+}
+
+@keyframes revealScreen {
+    from {
+        opacity: 0;
+        transform: translateY(35px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.celebration {
+    font-size: 30px;
+    margin-bottom: 25px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    50% { transform: scale(1.12); }
+}
+
+h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(35px, 7vw, 55px);
+    color: #fff;
+}
+
+.divider {
+    width: 100px;
+    height: 2px;
+    margin: 28px auto;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 25px;
+    color: var(--light-purple);
+    margin-bottom: 18px;
+}
+
+.message {
+    max-width: 650px;
+    margin: 25px auto;
+    color: #e4d7ef;
+    line-height: 2;
+    font-size: 14px;
+}
+
+.blessing-card, .future-card {
+    background: linear-gradient(135deg, #ffffff12, #a855f71c);
+    border: 1px solid #d9aaff55;
+    border-radius: 22px;
+    padding: 30px 25px;
+    margin: 30px auto;
+    max-width: 650px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 15px 45px #00000030;
+}
+
+.blessing-card p, .future-card p {
+    color: #e5d9f0;
+    font-size: 13px;
+    line-height: 1.9;
+    margin: 15px 0;
+}
+
+.ameen {
+    color: var(--gold) !important;
+    font-weight: 600;
+    font-size: 18px !important;
+}
+
+.future-card span {
+    font-size: 35px;
+}
+
+.final-message {
+    padding: 35px 10px;
+    margin-top: 25px;
+}
+
+.final-message p {
+    color: #d9c8e8;
+    line-height: 1.9;
+    margin: 15px 0;
+    font-size: 14px;
+}
+
+.from {
+    margin-top: 35px !important;
+}
+
+.hilali {
+    color: var(--gold);
+    font-size: 35px;
+    letter-spacing: 5px;
+}
+
+.replay-button {
+    margin: 20px;
+    background: transparent;
+    color: var(--light-purple);
+    border: 1px solid #c78aff88;
+    padding: 13px 22px;
+    border-radius: 30px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    transition: .3s;
+}
+
+.replay-button:hover {
+    background: #a855f733;
+}
+
+footer {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 20px;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: #b99acb;
+}
+
+/* FLOATING HEARTS */
+
+.heart {
+    position: absolute;
+    bottom: -40px;
+    animation: rise 6s linear forwards;
+    opacity: 0;
+}
+
+@keyframes rise {
+    10% { opacity: .9; }
+    100% {
+        transform: translateY(-110vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+@media (max-width: 500px) {
+    .container {
+        padding: 45px 18px;
+    }
+
+    .gift-area {
+        padding-top: 50px;
+    }
+
+    .blessing-card {
+        padding: 25px 18px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+    }
+}
+/* MAIMUNA'S MUSIC CONTROL */
+
+.music-button {
+    display: inline-block;
+    margin: 20px auto;
+    padding: 14px 28px;
+    border-radius: 40px;
+
+    color: white;
+
+    background: linear-gradient(
+        135deg,
+        #a855f7,
+        #642b91
+    );
+
+    border: 1px solid #e9c5ff;
+
+    font-size: 12px;
+    letter-spacing: 1px;
+
+    cursor: pointer;
+
+    box-shadow: 0 0 25px #a855f766;
+
+    transition: all .3s ease;
+}
+
+.music-button:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 35px #d19aff;
+}
